@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA 22 Career Mode - Player Development</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .team-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+
+        .team-logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .reconnect-button {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #2575fc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            background: #2575fc;
+            color: white;
+        }
+
+        .calendar {
+            background: #2575fc;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        .calendar-day.match-day::after {
+            content: "🎮";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .player-development {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .player-header {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .player-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .player-info {
+            flex-grow: 1;
+        }
+
+        .player-name {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .player-value {
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .progress-bar {
+            background: #eee;
+            height: 24px;
+            border-radius: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+            height: 100%;
+            width: 79%;
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stat-increase {
+            color: #4CAF50;
+            font-size: 14px;
+        }
+
+        .news-section, .tables-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2575fc;
+        }
+
+        .news-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .match-result {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .team-badge {
+            width: 30px;
+            height: 30px;
+        }
+
+        .score {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .tables-section table {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .tables-section td {
+            padding: 8px 0;
+        }
+
+        .days-remaining {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 4px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="team-info">
+            <img src="/images/profile.png" alt="Liverpool" class="team-logo">
+            <div>
+                <div style="font-weight: bold;">Liverpool</div>
+                <div style="color: #666;">Mulla Royal</div>
+            </div>
+        </div>
+        <div class="reconnect-button">
+            🎮 PRESS THE START BUTTON TO RE-CONNECT
+        </div>
+    </div>
+
+    <div class="navigation">
+        <div class="nav-item">CENTRAL</div>
+        <div class="nav-item">SQUAD</div>
+        <div class="nav-item">TRANSFERS</div>
+        <div class="nav-item active">OFFICE</div>
+        <div class="nav-item">SEASON</div>
+    </div>
+
+    <div class="calendar">
+        <div class="calendar-header">
+            <div style="font-size: 20px;">ADVANCE</div>
+            <div style="font-weight: bold;">APR 2022</div>
+        </div>
+        <div class="calendar-grid">
+            <div class="calendar-day">MON<br>18</div>
+            <div class="calendar-day">TUE<br>19</div>
+            <div class="calendar-day match-day">WED<br>20</div>
+            <div class="calendar-day match-day">THU<br>21</div>
+            <div class="calendar-day match-day">FRI<br>22</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="player-development">
+            <h2 class="section-title">PLAYER DEVELOPMENT</h2>
+            <div class="player-header">
+                <img src="/images/profile.png" alt="Jann-Fiete Arp" class="player-image">
+                <div class="player-info">
+                    <div class="player-name">Jann-Fiete Arp</div>
+                    <div style="font-size: 18px;">OVR 78 | ST</div>
+                    <div class="player-value">$11,500,000 <span style="color: #4CAF50;">↑ 0%</span></div>
+                    <div>Days Remaining: 6</div>
+                    <div>Sessions Available: 4</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">FINISHING</div>
+                    <div class="stat-value">85</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">SHOT POWER</div>
+                    <div class="stat-value">82</div>
+                    <div class="stat-increase">↑5</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">BALL CONTROL</div>
+                    <div class="stat-value">81</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">ATT. POSITION</div>
+                    <div class="stat-value">80</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">DRIBBLING</div>
+                    <div class="stat-value">80</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">VOLLEYS</div>
+                    <div class="stat-value">79</div>
+                    <div class="stat-increase">↑6</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="news-section">
+            <h2 class="section-title">NEWS</h2>
+            <div class="news-item">
+                <h3>LIVERPOOL ENJOY WIN STREAK</h3>
+                <div class="match-result">
+                    <img src="/images/profile.png" alt="Liverpool" class="team-badge">
+                    <span class="score">3 - 0</span>
+                    <img src="/images/profile.png" alt="Crystal Palace" class="team-badge">
+                </div>
+            </div>
+            <div class="news-item">
+                <h3>Spurs 3-1 West Ham</h3>
+                <p>Amazing Performances from Gnabry</p>
+                <p style="color: #666; font-size: 14px;">Hat-trick hero leads Spurs to victory</p>
+            </div>
+            <div class="news-item">
+                <h3>Bournemouth 3-2 Wolves</h3>
+                <p style="color: #666; font-size: 14px;">Last-minute winner seals dramatic comeback</p>
+            </div>
+        </div>
+
+        <div class="tables-section">
+            <h2 class="section-title">TABLES</h2>
+            <h3>The Emirates FA Cup</h3>
+            <h4 style="color: #666; margin: 10px 0;">Semi Finals</h4>
+            <table>
+                <tr>
+                    <td><img src="/api/placeholder/20/20" alt="Arsenal" style="vertical-align: middle; margin-right: 8px;">Arsenal</td>
+                </tr>
+                <tr>
+                    <td><img src="/api/placeholder/20/20" alt="Liverpool" style="vertical-align: middle; margin-right: 8px;">Liverpool</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
